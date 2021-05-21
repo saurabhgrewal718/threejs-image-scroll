@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 import { PlaneBufferGeometry } from 'three'
+import gsap from 'gsap'
 
 //texture loader
 const textureLoader = new THREE.TextureLoader()
@@ -26,7 +27,7 @@ for(let i=0;i<6;i++){
     })
 
     const img = new THREE.Mesh(geometry,material)
-    img.position.set(Math.random()+.3,-i*1.8)
+    img.position.set(Math.random()+.3,i*1.5)
 
     scene.add(img)
 }
@@ -118,8 +119,8 @@ const raycaster= new THREE.Raycaster()
 const mouse= new THREE.Vector2()
 
 window.addEventListener('mousemove',(event) =>{
-    mouse.x = event.clientX/sizes.width*2 -1
-    mouse.y= -(event.clientY/sizes.height*2 +1)
+    mouse.x = (event.clientX/sizes.width)*2 -1
+    mouse.y= -(event.clientY/sizes.height)*2 +1
 })
 
 
@@ -133,24 +134,26 @@ const tick = () =>
 {
 
     const elapsedTime = clock.getElapsedTime()
-    
+    console.log(mouse.x)
+    console.log(mouse.y)
     position+=y
     y*=0.9
+    camera.position.y=-position
 
     raycaster.setFromCamera(mouse,camera)
     const intersects = raycaster.intersectObjects(objs)
 
     for(const intersect of intersects){
-        intersect.object.scale.set(1.1,1.1)
+        gsap.to(intersect.object.scale,{x:1.7,y:1.7})
     }
 
     for(const object of objs){
         if(!intersects.find(intersect => intersect.object === object)){
-            object.scale.set(1,1)
+            gsap.to(object.scale,{x:1,y:1})
         }
     }
 
-    camera.position.y=-position
+    
 
     // Update objects
    
