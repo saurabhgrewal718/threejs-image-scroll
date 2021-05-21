@@ -27,7 +27,7 @@ for(let i=0;i<6;i++){
     })
 
     const img = new THREE.Mesh(geometry,material)
-    img.position.set(Math.random()+.3,i*1.5)
+    img.position.set(Math.random()+.3,i*1.8)
 
     scene.add(img)
 }
@@ -91,7 +91,7 @@ camera.position.y = 0
 camera.position.z = 2
 scene.add(camera)
 
-gui.add(camera.position,'y').min(-10).max(10)
+gui.add(camera.position,'y').min(-100).max(100)
 
 // Controls
 // const controls = new OrbitControls(camera, canvas)
@@ -134,22 +134,30 @@ const tick = () =>
 {
 
     const elapsedTime = clock.getElapsedTime()
-    console.log(mouse.x)
-    console.log(mouse.y)
     position+=y
     y*=0.9
     camera.position.y=-position
+    if(camera.position.y>9){
+        camera.position.y=9
+    }
+    if(camera.position.y<0){
+        camera.position.y=0
+    }
 
     raycaster.setFromCamera(mouse,camera)
     const intersects = raycaster.intersectObjects(objs)
 
     for(const intersect of intersects){
         gsap.to(intersect.object.scale,{x:1.7,y:1.7})
+        gsap.to(intersect.object.rotation,{y:-0.5})
+        gsap.to(intersect.object.position,{z:-0.9})
     }
 
     for(const object of objs){
         if(!intersects.find(intersect => intersect.object === object)){
             gsap.to(object.scale,{x:1,y:1})
+            gsap.to(object.rotation,{y:0})
+            gsap.to(object.position,{z:0})
         }
     }
 
