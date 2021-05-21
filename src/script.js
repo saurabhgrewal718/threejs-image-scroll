@@ -26,10 +26,18 @@ for(let i=0;i<6;i++){
     })
 
     const img = new THREE.Mesh(geometry,material)
-    img.position.set(Math.random()+.3,i*(-1.8))
+    img.position.set(Math.random()+.3,-i*1.8)
 
     scene.add(img)
 }
+
+let objs=[]
+
+scene.traverse((object) => {
+    if(object.isMesh){
+        objs.push(object)
+    }
+})
 
 // Objects
 
@@ -105,6 +113,15 @@ function onmousewheel(event){
     y=event.deltaY*.005
 }
 
+const raycaster= new THREE.Raycaster()
+
+const mouse= new THREE.Vector2()
+
+window.addEventListener('mousemove',(event) =>{
+    mouse.x = event.clientX/sizes.width*2 -1
+    mouse.y= -(event.clientY/sizes.height*2 +1)
+})
+
 
 /**
  * Animate
@@ -119,7 +136,21 @@ const tick = () =>
     
     position+=y
     y*=0.9
-    camera.position.y=position
+
+    raycaster.setFromCamera(mouse,camera)
+    const intersects = raycaster.intersectObjects(objs)
+
+    for(const intersect of intersects){
+        intersect.object.scale.set(1.1,1.1)
+    }
+
+    for(const object of objs){
+        if(!intersects.find(intersect => intersect.object === object)){
+            object.scale.set(1,1)
+        }
+    }
+
+    camera.position.y=-position
 
     // Update objects
    
